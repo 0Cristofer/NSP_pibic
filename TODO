@@ -1,11 +1,12 @@
 TODO:
     - Verificar condições de restrições flexíveis
-    - Separar projetos (TCC/PIBIC)
+    - Verificar organização
+    - Fazer nova modelagem
     - Script para execução geral
 
 Problemas:
     - Garantir restrições flexíveis mínimas
         Permitir restrições mínimas a serem quebradas. NSPLib tem média de violações
         Fazer verificação de restrições no final da execução. NSPLib tem valor fixo de custo para
-        violação de restrições. Ver eltromagnetic Maenhout, B.
+        violação de restrições. Ver eltromagnetic Maenhout, B, dissetação everton melo.
     - Livro não tem o algoritmo de busca de soluções

@@ -1,0 +1,18 @@
+Case file explained using case Cases/7.gen
+
+Number of days: 7   Number of shifts: 4
+
+Number of assignments
+Min: 5  Max: 5
+
+Consecutive working shifts
+Min: 2  Max:5
+
+Consecutive same working shifts     Number of assignments per shift
+Shift 1: (min) 2 (max) 3	        (min)0 (max)5
+2	3	                                 0	    5
+2	3	                                 0	    5
+1	2	                                 0	    5
+
+
+

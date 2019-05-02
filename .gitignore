@@ -1,0 +1,11 @@
+cmake-build-debug/
+.idea/
+out/
+output_test.txt
+NSPLib/Cases
+NSPLib/N25
+NSPLib/N30
+NSPLib/N50
+NSPLib/N60
+NSPLib/N75
+NSPLib/N100

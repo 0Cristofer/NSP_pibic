@@ -1,7 +1,7 @@
 /* Nurse scheduling day class.
    Author: Cristofer Oswald (cristoferoswald@gmail.com)
    Created: 08/02/2019
-   Edited: 14/03/2019 */
+   Edited: 10/07/2019 */
 
 #include <iostream>
 #include <climits>
@@ -44,20 +44,12 @@ void Day::getCostMatrix(int **cost) {
                 if((j != 3) && ((problem.nurses[i]->current_state->days_worked + 1) > problem.nsp_case.max_asg))
                     shift_cost = SOFT_CONSTRAINT_COST;
 
-                if((j == 3) && (problem.nurses[i]->current_state->days_worked < problem.nsp_case.min_asg)) {
-                    if (!problem.nurses[i]->current_state->reached_min_worked);
-                        //shift_cost = shift_cost + 1; // If the minimum work days hasn't been achived, increase the cost of a free shift
-                }
 
                 if(!problem.nurses[i]->current_state->assgined_shifts.empty()){
                     if(problem.nurses[i]->current_state->assgined_shifts.back()->type == j){
                         if(j != 3){
                             if((problem.nurses[i]->current_state->con_working_shifts + 1) > problem.nsp_case.max_cws)
                                 shift_cost = SOFT_CONSTRAINT_COST;
-                            if(problem.nurses[i]->current_state->con_working_shifts < problem.nsp_case.min_cws) {
-                                if (!problem.nurses[i]->current_state->reached_min_con_working)
-                                    shift_cost = shift_cost - 1; // If the minimum hasn't been achived, decrease the cost
-                            }
                         }
 
                         if((problem.nurses[i]->current_state->con_same_working_shifts + 1) >
@@ -65,20 +57,9 @@ void Day::getCostMatrix(int **cost) {
                             shift_cost = SOFT_CONSTRAINT_COST;
                     }
 
-                    if(problem.nurses[i]->current_state->con_same_working_shifts <
-                       problem.nsp_case.con_same_shift[j].first) {
-                        if(!problem.nurses[i]->current_state->reached_min_same_assign[j])
-                            shift_cost = shift_cost - 1;
-                    }
-
                     if((problem.nurses[i]->current_state->number_assignments_shifts[j] + 1) >
                              problem.nsp_case.assg_shift[j].second)
                         shift_cost = SOFT_CONSTRAINT_COST;
-                    if(problem.nurses[i]->current_state->number_assignments_shifts[j] <
-                            problem.nsp_case.assg_shift[j].first) {
-                        if(!problem.nurses[i]->current_state->reached_min_assign[j])
-                            shift_cost = shift_cost - 1;
-                    }
                 }
             }
 
@@ -101,7 +82,7 @@ void Day::getCostMatrix(int **cost) {
 
 }
 
-void Day::assignNurses(int* &assignments) {
+void Day::assignNurses(int* assignments) {
     for(int i = 0; i < problem.n_nurses; i++){
         if(assignments[i] > (total_shifts -1))
             shifts[assignments[i]]->type = problem.nurses[i]->min_shift_now;

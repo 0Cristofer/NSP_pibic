@@ -46,7 +46,7 @@ extern "C" {
  * @param s Number of solutions found (placeholder)
  * @return -1 if there there were problems, else 0
  */
-int apc(int n,int **a,int INF,int *z_p,int *f, int* s);
+int apc(int n,int **a,int INF,int *z_p,int *f, std::vector<std::vector<int> *> * *s, int k_total);
 
 
 

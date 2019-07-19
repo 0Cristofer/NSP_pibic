@@ -11,7 +11,7 @@
 
 #include "include/NSP.hpp"
 #include "../util/include/util.hpp"
-#include "../apc/include/apc.h"
+#include "../apc/include/apc.hpp"
 
 void NSP::printProblem() {
     std::cout << "---------------------------------" << std::endl;
@@ -27,7 +27,7 @@ void NSP::printProblem() {
 }
 
 void NSP::solve() {
-    int solution_cost = 0;
+    int solution_cost = 0, total = 0;
     Solution* solution, *current;
 
     cost = (int **) std::malloc(problem.n_nurses * sizeof(int*));
@@ -42,7 +42,7 @@ void NSP::solve() {
     for(Day* day: days){
         day->getCostMatrix(cost);
 
-        day->assignNurses(current->solution);
+        day->assignNurses(current->solution->data());
         current = current->next;
     }
 
@@ -58,13 +58,11 @@ void NSP::solve() {
 
     std::cout << "Problem solved. Total cost: " << this->total_cost << std::endl;
 
-    // DEBUG START
-    bool check = true;
     for(Nurse *nurse : nurses){
-        check = nurse->assertConstraints() && check;
+        total = total + nurse->getNumConstraintsViolated();
     }
-    assert(check);
-    // DEBUG END
+
+    std::cout << "Total soft constraints violated: " << total << std::endl;
 
     delete(solution);
 
@@ -73,29 +71,9 @@ void NSP::solve() {
 }
 
 Solution * NSP::solveDay(Day *day, int *assignments, int *solution_cost) {
-    int solution_size, next_solution_cost = 0, min_next_cost = INT_MAX;
-    int **solutions;
-
-    // DEBUG START
-    int **cos;
-#define s 5
-    int c[s][s] = {
-            {2, 3, 4, 4, 5},
-            {4, 1, 4, 3, 3},
-            {4, 2, 1, 2, 2},
-            {3, 3, 3, 1, 5},
-            {3, 3, 3, 1, 3}
-
-    };
-
-    cos = (int **) malloc(sizeof(int*) * s);
-    for(int i = 0; i < s; i++)
-        cos[i] = (int *) malloc(sizeof(int) * s);
-
-    for(int i = 0; i < s; i++)
-        for(int j = 0; j < s; j++)
-            cos[i][j] = c[i][j];
-    // DEBUG END
+    int next_solution_cost = 0, min_next_cost = INT_MAX;
+    int *single_solution;
+    std::vector<std::vector<int> *> *solutions;
 
     Solution* current = nullptr, *next_solution = nullptr;
 
@@ -104,42 +82,27 @@ Solution * NSP::solveDay(Day *day, int *assignments, int *solution_cost) {
     if(day != nullptr){ // The last day won't be a real day, just a assignment
         current = new Solution();
 
-        // Temporário, a alocação das soluções será feita pelo APC
-        solutions = (int **) malloc(sizeof(int*));
-        *solutions = (int *) malloc(n_nurses * sizeof(int));
+        single_solution = (int *) malloc(n_nurses * sizeof(int));
 
         day->getCostMatrix(cost);
 
-        // DEBUG START
-        for(int i = 0; i < problem.n_nurses; i++){
-            for(int j = 0; j < problem.n_nurses; j++){
-                std::cout << cost[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-        // DEBUG END
+        apc(problem.n_nurses, cost, INT_MAX, solution_cost, single_solution, &solutions, 6);
 
-        apc(problem.n_nurses, cost, INT_MAX, solution_cost, *solutions, &solution_size);
-
-        assert(*solution_cost < SOFT_CONSTRAINT_COST); // Hard/soft max constraints check
-
-        for(int i = 0; i < solution_size; i++){ // For each solution found
+        for(auto & solution : *solutions){ // For each solution found
             current_day = current_day + 1;
 
             // Solve the next day based on the current solution
-            if(current_day < n_days) next_solution = solveDay(days[current_day], solutions[i], &next_solution_cost);
-            else solveDay(nullptr, solutions[i], &next_solution_cost); // For the last day
+            if(current_day < n_days) next_solution = solveDay(days[current_day], solution->data(), &next_solution_cost);
+            else solveDay(nullptr, solution->data(), &next_solution_cost); // For the last day
 
             if(next_solution_cost < min_next_cost){ // Finds the lowest overall cost solution
                 current->clear();
 
                 current->next = next_solution;
-                current->solution = solutions[i];
+                current->setSolution(solution);
                 min_next_cost = next_solution_cost;
             }
             else{
-                free(solutions[i]);
                 delete(next_solution);
             }
 
@@ -148,14 +111,10 @@ Solution * NSP::solveDay(Day *day, int *assignments, int *solution_cost) {
 
         *solution_cost = *solution_cost + min_next_cost;
 
-        free(solutions);
+        for(std::vector<int> *solution : *solutions) delete solution;
+        delete solutions;
+        free(single_solution);
     }
-
-    // DEGUG START
-    for(int i = 0; i < s; i++)
-        free(cos[i]);
-    free(cos);
-    // DEBUG END
 
     current_day = current_day - 1;
 

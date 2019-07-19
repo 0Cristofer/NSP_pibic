@@ -12,9 +12,15 @@ Solution::~Solution() {
 }
 
 void Solution::clear() {
-    if(solution != nullptr) free(solution);
-    if(next != nullptr) delete (next);
+    delete solution;
+    delete next;
 
     solution = nullptr;
     next = nullptr;
+}
+
+void Solution::setSolution(std::vector<int> *sol) {
+    solution = new std::vector<int>();
+
+    solution->insert(solution->end(), sol->begin(), sol->end());
 }

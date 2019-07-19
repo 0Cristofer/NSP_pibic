@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "apc/include/apcsolution.hpp"
 #include "util/include/util.hpp"
 
 NSP problem;
@@ -26,8 +27,12 @@ int main(int argc, char **argv) {
     std::cout << R"(Starting...)" << std::endl << std::endl;
 
     readProblem();
+    init(problem.n_nurses);
 
     problem.solve();
 
+    clear();
     endProgram();
+
+    return 0;
 }

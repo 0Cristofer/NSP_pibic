@@ -71,7 +71,7 @@ public:
      * Checks if minimum constraints were reached
      * @return True if reached
      */
-    bool assertConstraints();
+    int getNumConstraintsViolated();
 
     virtual ~Nurse();
 };

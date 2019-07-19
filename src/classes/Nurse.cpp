@@ -75,8 +75,8 @@ Nurse::~Nurse() {
     delete(current_state);
 }
 
-bool Nurse::assertConstraints() {
-    bool check;
+int Nurse::getNumConstraintsViolated() {
+    int total = 0;
 
     if(!problem.nsp_case.min_asg)
         current_state->reached_min_worked = true;
@@ -84,7 +84,8 @@ bool Nurse::assertConstraints() {
     if(!problem.nsp_case.min_cws)
         current_state->reached_min_con_working = true;
 
-    check = current_state->reached_min_worked && current_state->reached_min_con_working;
+    if(!current_state->reached_min_worked) total = total + 1;
+    if(!current_state->reached_min_con_working) total = total + 1;
 
     for(int i = 0; i < problem.n_shifts; i++){
         if(!problem.nsp_case.con_same_shift[i].first)
@@ -93,11 +94,11 @@ bool Nurse::assertConstraints() {
         if(!problem.nsp_case.assg_shift[i].first)
             current_state->reached_min_assign[i] = true;
 
-        check = check && current_state->reached_min_assign[i];
-        check = check && current_state->reached_min_same_assign[i];
+        if(!current_state->reached_min_same_assign[i]) total = total + 1;
+        if(!current_state->reached_min_assign[i]) total = total + 1;
     }
 
-    return check;
+    return total;
 }
 
 State::State(State *state): days_worked(state->days_worked), con_same_working_shifts(state->con_same_working_shifts),

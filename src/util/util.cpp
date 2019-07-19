@@ -143,6 +143,10 @@ void readProblem() {
     instance_file >> input1; // Number of shifts
     problem.n_shifts = std::stoi(input1);
 
+    /* TODO: ler dos parametros de entrada*/
+    problem.k_sol = 2;
+    problem.max_depth = 3;
+
     // Instance file reading
 
     // Reads shift/day minimum coverage

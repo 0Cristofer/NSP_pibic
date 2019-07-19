@@ -6,8 +6,8 @@
 #ifndef NSP_NSP_HPP
 #define NSP_NSP_HPP
 
-#define HARD_CONSTRAINT_COST 100000
-#define SOFT_CONSTRAINT_COST 10000
+#define HARD_CONSTRAINT_COST 100
+#define SOFT_CONSTRAINT_COST 100
 
 #include "Case.hpp"
 #include "Nurse.hpp"
@@ -16,8 +16,8 @@
 
 class NSP {
 public:
-    int n_days = 0, n_nurses = 0, n_shifts = 0, total_cost = 0;
-    int current_day = 0, **cost;
+    int n_days = 0, n_nurses = 0, n_shifts = 0, total_cost = 0, k_sol = 0, max_depth = 0;
+    int current_day = 0, last_depth_day = 0, current_depth = 0, **cost;
 
     Case nsp_case;
 

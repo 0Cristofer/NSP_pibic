@@ -13,7 +13,9 @@ October 2008:
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "include/apc.h"
+#include <vector>
+#include "include/apc.hpp"
+#include "include/apcsolution.hpp"
 
 void init(int n,int **a,int *f,int *u,int *v,int *fb,int *p,int INF,int *m_p);
 void path(int n,int **a,int *u,int *v, const int *fb,int *rc,int *pi,int *lr,int *uc,int INF,int ii,int *jj_p);
@@ -79,10 +81,9 @@ void incr(int *f,int *fb, const int *rc,int j);
  THIS WORK WAS SUPPORTED BY  C.N.R. , ITALY.
 
 */
-int apc(int n,int **a,int INF,int *z_p,int *f, int* s)
+int apc(int n,int **a,int INF,int *z_p, int *f, std::vector<std::vector<int> *> * *s, int k_total)
 {
 	int i,j,k,m,*u,*v,*fb,*rc,*pi,*lr,*uc;
-	*s = 1;
 
 	/*
 	Memory allocation
@@ -90,42 +91,42 @@ int apc(int n,int **a,int INF,int *z_p,int *f, int* s)
 	If not enough memory is available, the method returns -1
 	*/
 	u=(int*)malloc(n*sizeof(int));
-	if(u==NULL)
+	if(u==nullptr)
 	{
 		return -1;
 	}
 	v=(int*)malloc(n*sizeof(int));
-	if(v==NULL)
+	if(v==nullptr)
 	{
 		free(u);
 		return -1;
 	}
 	fb=(int*)malloc(n*sizeof(int));
-	if(fb==NULL)
+	if(fb==nullptr)
 	{
 		free(u); free(v);
 		return -1;
 	}
 	rc=(int*)malloc(n*sizeof(int));
-	if(rc==NULL)
+	if(rc==nullptr)
 	{
 		free(u); free(v); free(fb);
 		return -1;
 	}
 	pi=(int*)malloc(n*sizeof(int));
-	if(pi==NULL)
+	if(pi==nullptr)
 	{
 		free(u); free(v); free(fb); free(rc);
 		return -1;
 	}
 	lr=(int*)malloc(n*sizeof(int));
-	if(lr==NULL)
+	if(lr==nullptr)
 	{
 		free(u); free(v); free(fb); free(rc); free(pi);
 		return -1;
 	}
 	uc=(int*)malloc(n*sizeof(int));
-	if(uc==NULL)
+	if(uc==nullptr)
 	{
 		free(u); free(v); free(fb); free(rc); free(pi); free(lr);
 		return -1;
@@ -186,6 +187,8 @@ int apc(int n,int **a,int INF,int *z_p,int *f, int* s)
 
 	//Free all the allocated memory and return
 	free(u); free(v); free(fb); free(rc); free(pi); free(lr); free(uc);
+
+	*s = getSolutions(a, k_total);
 
 	return 0;
 

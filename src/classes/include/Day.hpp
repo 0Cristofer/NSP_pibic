@@ -32,7 +32,7 @@ public:
      * Assign all nurses to this day's shifts
      * @param assignments A vector where nurse i is assigned to shift v[i]
      */
-    void assignNurses(int* &assignments);
+    void assignNurses(int* assignments);
 
     /**
      * Reset this day nurses assignments

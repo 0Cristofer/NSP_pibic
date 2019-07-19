@@ -1,12 +1,22 @@
 TODO:
-    - Verificar condições de restrições flexíveis
-    - Verificar organização
-    - Fazer nova modelagem
     - Script para execução geral
+    - Alterar algoritmo para executar em camadas
+    - Configurar profundidade das camadas
+    - Fazer cálculo das variáveis (k,nd^k, etc) baseado em número de soluções visitadas
 
-Problemas:
-    - Garantir restrições flexíveis mínimas
-        Permitir restrições mínimas a serem quebradas. NSPLib tem média de violações
-        Fazer verificação de restrições no final da execução. NSPLib tem valor fixo de custo para
-        violação de restrições. Ver eltromagnetic Maenhout, B, dissetação everton melo.
-    - Livro não tem o algoritmo de busca de soluções
+Ideias:
+    Setar um valor (K) de soluções por dia
+    Setar um máximo de soluções visitadas (500 ou 1000 para comparar com o NSPLib)
+    Calcular a quantidade de dias que podem visitar todas as soluções (nd^k)
+    Calcular um valor para K de forma a que nd^K < niterações
+    Se não houver valor de K que satisfaça a condição acima, calcular o período de dias que o valor máximo é alcançado
+    Executar o algoritmo em partes, por exemplo:
+        Dividir os dias em 3 partes.
+        Para cada parte, executar o algoritmo normalmente.
+        Ao final da parte, obtém a melhor solução e começa a executar a próxima parte com base na solução anterior
+    Sobre restrições:
+        Garantir restrições máximas.
+        Ao final da execução do algoritmo verificar restrições mínimas não atingidas e colocar o total na solução
+
+Notas:
+    Restrições rígidas e as flexíveis máximas estão garantidas que não serão quebradas na criação da matriz de custos

@@ -1,7 +1,6 @@
 TODO:
     - Script para execução geral
-    - Alterar algoritmo para executar em camadas
-    - Configurar profundidade das camadas
+    - Verificar cálculo de custo de restrições flexíveis
     - Fazer cálculo das variáveis (k,nd^k, etc) baseado em número de soluções visitadas
 
 Ideias:
@@ -16,7 +15,7 @@ Ideias:
         Ao final da parte, obtém a melhor solução e começa a executar a próxima parte com base na solução anterior
     Sobre restrições:
         Garantir restrições máximas.
-        Ao final da execução do algoritmo verificar restrições mínimas não atingidas e colocar o total na solução
+        Ao final da execução do algoritmo verificar restrições mínimas não atingidas
 
 Notas:
     Restrições rígidas e as flexíveis máximas estão garantidas que não serão quebradas na criação da matriz de custos

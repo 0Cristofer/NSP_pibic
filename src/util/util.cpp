@@ -144,8 +144,8 @@ void readProblem() {
     problem.n_shifts = std::stoi(input1);
 
     /* TODO: ler dos parametros de entrada*/
-    problem.k_sol = 2;
-    problem.max_depth = 3;
+    problem.k_sol = 8;
+    problem.max_depth = 6;
 
     // Instance file reading
 

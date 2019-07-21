@@ -3,6 +3,7 @@
    Created: 23/11/2018
    Edited: 16/02/2019 */
 
+#include <iostream>
 #include "include/Nurse.hpp"
 #include "include/Shift.hpp"
 #include "../util/include/util.hpp"
@@ -84,8 +85,14 @@ int Nurse::getNumConstraintsViolated() {
     if(!problem.nsp_case.min_cws)
         current_state->reached_min_con_working = true;
 
-    if(!current_state->reached_min_worked) total = total + 1;
-    if(!current_state->reached_min_con_working) total = total + 1;
+    if(!current_state->reached_min_worked){
+        if(args.verbose) std::cout << "Nurse: " << number << " didn't reach minimum worked" << std::endl;
+        total = total + 1;
+    }
+    if(!current_state->reached_min_con_working){
+        if(args.verbose) std::cout << "Nurse: " << number << " didn't reach minimum consecutive working" << std::endl;
+        total = total + 1;
+    }
 
     for(int i = 0; i < problem.n_shifts; i++){
         if(!problem.nsp_case.con_same_shift[i].first)
@@ -94,8 +101,14 @@ int Nurse::getNumConstraintsViolated() {
         if(!problem.nsp_case.assg_shift[i].first)
             current_state->reached_min_assign[i] = true;
 
-        if(!current_state->reached_min_same_assign[i]) total = total + 1;
-        if(!current_state->reached_min_assign[i]) total = total + 1;
+        if(!current_state->reached_min_same_assign[i]){
+            if(args.verbose) std::cout << "Nurse: " << number << " didn't reach minimum same assignment of: " << i << std::endl;
+            total = total + 1;
+        }
+        if(!current_state->reached_min_assign[i]){
+            if(args.verbose) std::cout << "Nurse: " << number << " didn't reach minimum assignment" << std::endl;
+            total = total + 1;
+        }
     }
 
     return total;

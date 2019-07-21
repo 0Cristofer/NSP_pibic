@@ -19,6 +19,8 @@ void invalidUsage();
 const struct option long_options[] = {
         {"help",    no_argument, nullptr, 'h'},
         {"verbose", no_argument, nullptr, 'v'},
+        {"nsolutions", required_argument, nullptr, 'k'},
+        {"maxdepth", required_argument, nullptr, 'm'},
         {"version", no_argument, (int*)(&(args.show_version)), true},
         {nullptr, 0, nullptr, 0}
 };
@@ -51,12 +53,21 @@ void readArgs(int argc, char** argv) {
             case 'v':
                 args.verbose = true;
                 break;
+            case 'k':
+                args.k = std::atoi(optarg);
+                break;
+            case 'm':
+                args.max_depth = std::atoi(optarg);
+                break;
             case '?':
                 unknwonOpt(argv);
             default:
                 break;
         }
     }
+
+    if(!args.k) args.k = 2;
+    if(!args.max_depth) args.max_depth = 7;
 
     if(((argc - optind) < 3) && ((!args.show_version) && (!args.show_help))){
         invalidUsage();
@@ -116,9 +127,9 @@ void readProblem() {
     std::tm *now;
     std::string input1, input2;
 
-    output_file = new std::ofstream();
 
     if(args.verbose){
+        output_file = new std::ofstream();
         std::cout << "Reading problem files..." << std::endl;
         std::cout << R"(    Instance file: )" << args.instance_file << std::endl;
         std::cout << R"(    Case file: )" << args.case_file << std::endl;
@@ -131,8 +142,11 @@ void readProblem() {
     case_file.open(args.case_file);
     if(!case_file.is_open()) cantOpen(args.case_file);
 
-    output_file->open(args.output_file);
-    if(!output_file->is_open()) cantOpen(args.output_file);
+
+    if(args.verbose) {
+        output_file->open(args.output_file);
+        if (!output_file->is_open()) cantOpen(args.output_file);
+    }
 
     instance_file >> input1; // Number of nurses
     problem.n_nurses = std::stoi(input1);
@@ -143,9 +157,8 @@ void readProblem() {
     instance_file >> input1; // Number of shifts
     problem.n_shifts = std::stoi(input1);
 
-    /* TODO: ler dos parametros de entrada*/
-    problem.k_sol = 8;
-    problem.max_depth = 6;
+    problem.k_sol = args.k;
+    problem.max_depth = args.max_depth;
 
     // Instance file reading
 
@@ -217,21 +230,25 @@ void readProblem() {
         problem.nsp_case.assg_shift.emplace_back(std::stoi(input1), std::stoi(input2));
     }
 
-    std::cout << "Reading files done." << std::endl << std::endl;
     if(args.verbose){
+        std::cout << "Reading files done." << std::endl << std::endl;
         problem.printProblem();
     }
 
     t = std::time(nullptr); // Get time now
     now = std::localtime(&t);
 
-    *output_file << OUTPUTHEADERSTR;
-    *output_file << std::setfill('0');
-    *output_file << "Run start at " << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' << now->tm_mday
-                 << ", " << std::setw(2) << now->tm_hour << ":" << std::setw(2) << now->tm_min << ":"
-                 << std::setw(2) << now->tm_sec << std::endl << std::endl;
-    *output_file << "Instance file: " << args.instance_file << std::endl;
-    *output_file << "Case file: " << args.case_file << std::endl << std::endl;
+    std::cout << t << std::endl;
+
+    if(args.verbose) {
+        *output_file << OUTPUTHEADERSTR;
+        *output_file << std::setfill('0');
+        *output_file << "Run start at " << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' << now->tm_mday
+                     << ", " << std::setw(2) << now->tm_hour << ":" << std::setw(2) << now->tm_min << ":"
+                     << std::setw(2) << now->tm_sec << std::endl << std::endl;
+        *output_file << "Instance file: " << args.instance_file << std::endl;
+        *output_file << "Case file: " << args.case_file << std::endl << std::endl;
+    }
 
     instance_file.close();
     case_file.close();
@@ -257,27 +274,31 @@ void endProgram(){
     t = std::time(nullptr);
     now = std::localtime(&t);
 
-    *output_file << "Run end at " << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' <<  now->tm_mday
-                 << ", " << std::setw(2) <<  now->tm_hour << ":" << std::setw(2) << now->tm_min
-                 << ":" << std::setw(2) << now->tm_sec << std::endl << std::endl;
+    std::cout << t << std::endl;
 
-    if (!end_type){
-        output_file->close();
-        delete output_file;
+    if(args.verbose) {
+        *output_file << "Run end at " << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' << now->tm_mday
+                     << ", " << std::setw(2) << now->tm_hour << ":" << std::setw(2) << now->tm_min
+                     << ":" << std::setw(2) << now->tm_sec << std::endl << std::endl;
 
-    }
-    else {
-        *output_file << "Final assignments:" << std::endl;
-        for (int i = 0; i < problem.n_nurses; i++) {
-            for(Day* day: problem.days){
-                if(day->shifts[i]->is_spare)
-                    *output_file << day->shifts[i]->nurse->number << "(" << day->shifts[i]->type << "S)" << " ";
-                else
-                    *output_file << day->shifts[i]->nurse->number << "(" << day->shifts[i]->type << ")" << " ";
+        if (!end_type) {
+            output_file->close();
+            delete output_file;
 
-                if(day->shifts[i]->nurse->number < 10) *output_file << " "; // Extra space to compensate the extra digit
+        } else {
+            *output_file << "Final assignments:" << std::endl;
+            for (int i = 0; i < problem.n_nurses; i++) {
+                for (Day *day: problem.days) {
+                    if (day->shifts[i]->is_spare)
+                        *output_file << day->shifts[i]->nurse->number << "(" << day->shifts[i]->type << "S)" << " ";
+                    else
+                        *output_file << day->shifts[i]->nurse->number << "(" << day->shifts[i]->type << ")" << " ";
+
+                    if (day->shifts[i]->nurse->number < 10)
+                        *output_file << " "; // Extra space to compensate the extra digit
+                }
+                *output_file << std::endl;
             }
-            *output_file << std::endl;
         }
     }
 

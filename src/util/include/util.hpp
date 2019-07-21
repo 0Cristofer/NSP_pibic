@@ -15,7 +15,7 @@
 #define NOK 0
 #define OK 1
 
-#define ARGSSTR "hv"
+#define ARGSSTR "hvk:m:"
 #define HELPSTR "\
             Nurse scheduling algorithm\n\n\
 Usage: nsp instace-file case-file output-file <options>\n\
@@ -37,6 +37,8 @@ extern struct args_t{
     bool verbose;
     bool show_help;
     bool show_version;
+    int k;
+    int max_depth;
 } args;
 
 extern const struct option long_options[];

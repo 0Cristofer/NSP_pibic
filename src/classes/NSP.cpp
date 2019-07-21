@@ -78,13 +78,19 @@ void NSP::solve() {
 
     this->total_cost = solution_cost;
 
-    std::cout << "Problem solved. Total cost: " << this->total_cost << std::endl;
+    if(args.verbose)
+        std::cout << "Problem solved. Total cost: " << this->total_cost << std::endl;
+    else
+        std::cout << total_cost << std::endl;
 
     for(Nurse *nurse : nurses){
         total = total + nurse->getNumConstraintsViolated();
     }
 
-    std::cout << "Total soft constraints violated: " << total << std::endl;
+    if(args.verbose)
+        std::cout << "Total soft constraints violated: " << total << std::endl;
+    else
+        std::cout << total << std::endl;
 
     for(int j = 0; j < n_nurses; j++) std::free(cost[j]);
     std::free(cost);

@@ -22,9 +22,10 @@ int main(int argc, char **argv) {
         showVersion();
     }
 
-    if(args.verbose) showVerbose();
-
-    std::cout << R"(Starting...)" << std::endl << std::endl;
+    if(args.verbose) {
+        showVerbose();
+        std::cout << R"(Starting...)" << std::endl << std::endl;
+    }
 
     readProblem();
     init(problem.n_nurses);

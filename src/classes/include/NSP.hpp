@@ -17,7 +17,7 @@
 class NSP {
 public:
     int n_days = 0, n_nurses = 0, n_shifts = 0, total_cost = 0, k_sol = 0, max_depth = 0;
-    int current_day = 0, last_depth_day = 0, current_depth = 0, **cost;
+    int current_day = 0, last_depth_day = 0, **cost;
 
     Case nsp_case;
 
